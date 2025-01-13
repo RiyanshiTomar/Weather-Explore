@@ -13,6 +13,10 @@ function App() {
     data: {},
     error: false
   });
+  const [location, setLocation] = useState({
+    latitude: null,
+    longitude: null
+  });
 
   const toDate = () => {
     const months = [
@@ -46,7 +50,7 @@ function App() {
   };
   //new search function
   const search = async (event) => {
-    console.log("API Key:", process.env.REACT_APP_WEATHER_API_KEY);
+    // console.log("API Key:", process.env.REACT_APP_WEATHER_API_KEY);
 
     event.preventDefault();
     if (event.type === "click" || (event.type === "keypress" && event.key === "Enter")) {
@@ -68,28 +72,70 @@ function App() {
     }
   };
 
+  const fetchLocation = async (event) => {
+    setQuery("");
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setLocation({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude
+          })
+        }, (error) => {
+          fetchDefaultLocationWeather()
+        }
+      )
+    } else {
+      fetchDefaultLocationWeather()
+    }
+  }
+
+  const fetchCurrentLocationWeather = async () => {
+    if (!location.latitude || !location.longitude) {
+      fetchDefaultLocationWeather();
+      return;
+    }
+    const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
+    const url = `https://api.shecodes.io/weather/v1/current?lat=${location.latitude}&lon=${location.longitude}&key=${apiKey}`;
+
+    try {
+      const response = await axios.get(url);
+      setWeather({data: response.data, loading: false, error: false})
+    } catch(error) {
+      fetchDefaultLocationWeather()
+    }
+  }
+
+  const fetchDefaultLocationWeather = async () => {
+    const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
+    const url = `https://api.shecodes.io/weather/v1/current?query=Rabat&key=${apiKey}`;
+
+    try {
+      const response = await axios.get(url);
+      setWeather({ data: response.data, loading: false, error: false });
+    } catch (error) {
+      setWeather({ data: {}, loading: false, error: true });
+      console.log("error", error);
+    }
+  }
+
   useEffect(() => {
     const fetchData = async () => {
-      const apiKey = process.env.REACT_APP_WEATHER_API_KEY;
-      const url = `https://api.shecodes.io/weather/v1/current?query=Rabat&key=${apiKey}`;
-
-      try {
-        const response = await axios.get(url);
-        setWeather({ data: response.data, loading: false, error: false });
-      } catch (error) {
-        setWeather({ data: {}, loading: false, error: true });
-        console.log("error", error);
-      }
+      fetchLocation()
     };
-
+    
     fetchData();
   }, []);
+
+  useEffect(() => {
+    fetchCurrentLocationWeather()
+  }, [location])
 
   return (
     <div className="App">
 
       {/* SearchEngine component */}
-      <SearchEngine query={query} setQuery={setQuery} search={search} />
+      <SearchEngine query={query} setQuery={setQuery} search={search} fetchLocation={fetchLocation} />
 
       {weather.loading && (
         <>

@@ -1,6 +1,6 @@
 import React from "react";
 
-function SearchEngine({ query, setQuery, search }) {
+function SearchEngine({ query, setQuery, search, fetchLocation }) {
   //handler function
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
@@ -10,6 +10,9 @@ function SearchEngine({ query, setQuery, search }) {
 
   return (
     <div className="SearchEngine">
+      <button onClick={fetchLocation} className="button-location">
+        <i className="fa-solid fa-location-crosshairs location-icon"></i>
+      </button >
       <input
         type="text"
         className="city-search"
