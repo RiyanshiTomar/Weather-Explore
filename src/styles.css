@@ -21,6 +21,8 @@ body {
   border-radius: 20px;
   box-shadow: 0 5px 5px rgba(0, 0, 0, 0.5);
   padding: 20px 15px;
+  min-height: 200px; /* Added to ensure visibility */
+
 }
 
 .SearchEngine {
@@ -30,13 +32,19 @@ body {
   align-items: center;
   margin-bottom: 30px;
   margin-top: 10px;
-} 
+  position: relative;
+}
+
+.search-container {
+  position: relative;
+  width: 70%;
+}
 
 .SearchEngine input {
   width: 70%;
   height: 40px;
   border: none;
-  border-radius: 5px; /* Updated */
+  border-radius: 5px; 
   padding: 2px 15px;
   font-size: 16px;
   outline: none;
@@ -69,6 +77,35 @@ body {
 .SearchEngine button:hover i {
   color: #f06789;
 }
+.suggestions-list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background-color: white;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin-top: 5px;
+  padding: 0;
+  list-style: none;
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.suggestion-item {
+  padding: 10px 15px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  text-align: left;
+  font-size: 14px;
+}
+
+.suggestion-item:hover,
+.suggestion-item.selected {
+  background-color: #f0f0f0;
+}
+
 
 .error-message {
   display: block;
